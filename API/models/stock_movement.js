@@ -9,10 +9,6 @@ const StockMoviment = sequelize.define('StockMoviment', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    date: {
-        type: DataTypes.DATE,
-        allowNull: false,
-    },
     type: {
         type: DataTypes.ENUM('entrada', 'saida'),
         allowNull: false,

@@ -10,7 +10,7 @@ const syncDatabase = async () => {
         const Product = require('./models/product');
         const Stock = require('./models/stock');
         const StockMoviment = require('./models/stock_movement');
-        await sequelize.sync({ force: true }); // Cuidado: isso irá apagar os dados existentes
+        await sequelize.sync();
         console.log('Banco de dados sincronizado com sucesso.');
     } catch (error) {
         console.error('Erro ao sincronizar o banco de dados:', error);
@@ -41,11 +41,7 @@ app.use('/api/product', productRouter);
 app.use('/api/stock', stockRouter);
 app.use('/api/stock_moviment', stockMovimentRouter);
 
-// Sincronizando o banco de dados
-sequelize.sync().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Servidor rodando na porta ${PORT}`);
-    });
-}).catch(err => {
-    console.error('Erro ao sincronizar o banco de dados:', err);
+app.listen(PORT, () => {
+console.log(`Servidor rodando na porta ${PORT}`);
 });
+

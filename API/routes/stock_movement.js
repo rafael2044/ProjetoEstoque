@@ -1,10 +1,10 @@
 const express = require('express');
-const {getMovementStock, getMovementsStock, insertMovementStock, updateMovementStock, deleteMovementStock} = require('../controllers/stock_movement')
-
+const {getMovementStock, getMovementsStock, insertMovementStock, updateMovementStock, deleteMovementStock, validateDataInsert} = require('../controllers/stock_movement')
+const {incrementDecrementItemStock} = require("../controllers/stock")
 const router = express.Router();
 
 // Cadastrar movimentação
-router.post('/',insertMovementStock);
+router.post('/',validateDataInsert, incrementDecrementItemStock, insertMovementStock);
 
 // Listar movimentações
 router.get('/', getMovementsStock);

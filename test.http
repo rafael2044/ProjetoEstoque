@@ -1,0 +1,73 @@
+@host = http://127.0.0.1:3000/
+
+GET {{host}}API/user HTTP/1.1
+
+###
+GET {{host}}API/user/1
+###
+POST {{host}}API/user HTTP/1.1
+Content-Type: application/json
+
+{
+    "name":"Rafael Soares Gomes",
+    "username": "rafael.gomes",
+    "password": "12345",
+    "access_level": "admin"
+}
+###
+PUT {{host}}API/user/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Maria Soares",
+    "username":"maria.soares",
+    "access_level": "funcionario"
+}
+
+###
+POST {{host}}API/supplier HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "JB Informática",
+    "contact": "11 982522501",
+    "address": "Rua das cajazeiras, 192, Uberlância-SP"
+}
+
+###
+POST {{host}}API/product HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Teclado USB Logitech",
+    "description": "Teclado USB simples logitech",
+    "price": 35.50
+}
+
+###
+POST {{host}}API/stock HTTP/1.1
+Content-Type: application/json
+
+{
+    "productId": 2,
+    "amount": 30
+}
+###
+GET {{host}}API/stock
+###
+POST {{host}}API/stock_moviment
+Content-Type: application/json
+
+{
+    "userId": 1,
+    "productId": 2,
+    "supplierId": 1,
+    "amount": 25,
+    "type": "saida"
+}
+
+###
+GET {{host}}API/stock_moviment
+
+###
+DELETE {{host}}API/stock_moviment/7
