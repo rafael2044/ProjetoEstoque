@@ -1,7 +1,8 @@
 const express = require('express')
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const sequelize = require('./database');
+const {sequelize} = require('./database');
+const cookieParser = require("cookie-parser")
 
 const syncDatabase = async () => {
     try {
@@ -10,6 +11,9 @@ const syncDatabase = async () => {
         const Product = require('./models/product');
         const Stock = require('./models/stock');
         const StockMoviment = require('./models/stock_movement');
+        const InvalidToken = require('./models/invalidToken')
+        const RefreshToken = require('./models/refreshToken')
+
         await sequelize.sync();
         console.log('Banco de dados sincronizado com sucesso.');
     } catch (error) {
@@ -24,6 +28,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(cookieParser())
 
 // Importando as rotas
 const authRouter = require('./routes/auth')
@@ -40,6 +45,14 @@ app.use('/api/supplier', supplierRouter);
 app.use('/api/product', productRouter);
 app.use('/api/stock', stockRouter);
 app.use('/api/stock_moviment', stockMovimentRouter);
+
+app.use((err, req, res, next) => {
+    // Define o status e a resposta
+    res.status(err.statusCode || 500).json({
+        status: err.status || 'error',
+        message: err.message || 'Internal Server Error',
+    });
+});
 
 app.listen(PORT, () => {
 console.log(`Servidor rodando na porta ${PORT}`);

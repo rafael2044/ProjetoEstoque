@@ -7,9 +7,12 @@ const insertUser = async (req, res) => {
         return res.status(400).json({message:"Está faltando dados"})
     }
     try {
+        if (await User.findOne({where:{username}})){
+            return res.status(400).json({message:"Nome de usuário já cadastrado!"})
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({ name, username, password: hashedPassword, access_level });
-        res.status(201).json({id:user.id, name:user.name, username: user.username, access_level:user.access_level});
+        res.status(201).json({user:{id:user.id, name:user.name, username: user.username, access_level:user.access_level}});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -38,12 +41,18 @@ const getUser =  async (req, res) => {
 }
 
 const updateUser =  async (req, res) => {
-    const { name, username, password, access_level } = req.body;
+    const { name, username, access_level } = req.body;
     try{
+        if (await User.findOne({where:{username}})){
+            return res.status(400).json({message:"Nome de Usuário já cadastrado."})
+        }
         const user = await User.findByPk(req.params.id);
         if (user) {
-            const updateUser = await User.update({ name, username, password, access_level });
-            return res.json(updateUser);
+            user.name = name
+            user.username = username
+            user.access_level = access_level
+            user.save();
+            return res.json({updateUser:user});
         }
             return res.status(404).json({ message: 'Usuário não encontrado.' });
     }catch(error){

@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../database');
+const {sequelize} = require('../database');
 
 const User = sequelize.define('User', {
     name: {
@@ -16,7 +16,7 @@ const User = sequelize.define('User', {
         allowNull: false,
     },
     access_level: {
-        type: DataTypes.ENUM('admin', 'funcionario'),
+        type: DataTypes.ENUM('administrador', 'padrao'),
         allowNull: false,
     },
 });
