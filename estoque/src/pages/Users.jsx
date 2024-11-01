@@ -1,25 +1,25 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../components/AuthContext';
 import FormUser from '../components/users/FormUser';
 import RowUser from '../components/users/RowUser';
 import Alert from '../components/alert/Alert';
+import api from '../services/api';
+import { useAuth } from '../components/AuthContext';
 
 export default function Users(){
-    const {userAccessLevel}= useAuth()
     const [users, setUsers] = useState([])
+    const {currentUser} = useAuth()
     const [showAlert, setShowAlert] = useState(false)
     const [messageAlert, setMessageAlert] = useState("")
     const [typeAlert, setTypeAlert] = useState("")
 
     useEffect(()=>{
         const getData = async()=>{
-            const res = await fetch("http://127.0.0.1:3000/api/user", {
-                method:"GET"
-            })
-            if(res.ok){
-                const data = await res.json();
-                setUsers([...data])
+            const res = await api.get("/api/user")
+            if(res.status === 200){
+                setUsers([...res.data])
+                return
             }
+            handleShowAlert(res.data.message, 'danger')
         }
         getData()
     }, [])
@@ -36,22 +36,31 @@ export default function Users(){
 
     const insertUser = async(user)=>{
         try {
-            const response = await fetch('http://127.0.0.1:3000/api/user', {
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body: JSON.stringify(user)
-            });
-        
-            if (!response.ok) {
-                const data = await response.json();
-                console.log(data.message);
+            const response = await api.post('/api/user', user);
+            
+            if (!response.status === 201) {
+                console.log(response.data.message);
                 throw new Error('Login failed');
             }
-            const data = await response.json();
-            setUsers([...users, data])
+            setUsers([...users, response.data.user])
             
         } catch (error) {
           console.error('Erro ao cadastrar Usuario:', error);
+        }
+    }
+
+    const deleteUser = async(id)=>{
+        try{
+            const res = await api.delete(`api/user/${id}`);
+        
+            if (res.status === 204){
+                handleShowAlert("Usuário excluido com sucesso", 'success')
+                setUsers(prev=>prev.filter(user=>user.id!=id))
+            }else{
+                handleShowAlert(res.data.message, 'danger')
+            }
+        }catch(error){
+            handleShowAlert(error.message, 'danger')
         }
     }
     return(
@@ -87,7 +96,7 @@ export default function Users(){
                     </thead>
                     <tbody>
                         {users.map(user=>(
-                            <RowUser key={user.id} user={user}/>
+                            <RowUser key={user.id} id={user.id} name={user.name} username={user.username} access_level={user.access_level} onDeleteUser={deleteUser} currentUser={user}/>
                         ))}
                         
                     </tbody>

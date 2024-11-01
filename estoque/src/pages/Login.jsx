@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
+import api from '../services/api';
+
 export default function Login(){
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -10,24 +12,18 @@ export default function Login(){
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://127.0.0.1:3000/api/login', {
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body: JSON.stringify({username, password})
-            });
-        
-            if (!response.ok) {
-                const data = await response.json();
-                console.log(data.message);
+            const response = await api.post("/api/login",{username, password}) 
+            
+            if (response.data?.error) {
+                console.log(response.data.error);
                 throw new Error('Login failed');
             }
-            const data = await response.json();
-            const { tokenAccess, access_level, expiredIn } = data;
+            const { accessToken, refreshToken, user } = response.data;
+            await login(accessToken, refreshToken, user);
+            navigate("/")
 
-            await login(tokenAccess, access_level, expiredIn);
-            navigate('/');
         } catch (error) {
-          console.error('Erro ao fazer login:', error);
+          console.error('Erro ao fazer login:', error.data);
           // Aqui você pode adicionar uma mensagem de erro para o usuário
         }
     };

@@ -8,17 +8,17 @@ export default function FormUser({onInsertUser, onShowAlert}){
     const [password, setPassword] = useState("")
     const [password2 , setPassword2] = useState("")
     const [message, setMessage] = useState("")
-    const {userAccessLevel} = useAuth()
+    const {currentUser} = useAuth()
 
     const handleSubmit = async(e)=>{
         e.preventDefault();
-        let  messageError = [];
+        let  messageError = "";
         const validInput = name && username && password && password2 && accessLevel;
         const equalPassword = password === password2;
         if (!validInput){
-            messageError.push("Alguns dos campos estão vazios") 
+            messageError+="*Alguns dos campos estão vazios" 
             if(!equalPassword){
-                messageError.push("As senhas não coincidem")
+                messageError+="\n*As senhas não coincidem"
             }
         }
         if (validInput && equalPassword){
@@ -52,8 +52,8 @@ export default function FormUser({onInsertUser, onShowAlert}){
                     <div className="col-3">
                         <select className="form-select fs-5" value={accessLevel} onChange={(e)=>setAccessLevel(e.target.value)}>
                             <option defaultValue value="">Escolha um nível de acesso</option>
-                            <option value="funcionario">Funcionario</option>
-                            <option value="admin">Administrador</option>
+                            <option value="padrao">Padrão</option>
+                            <option value="administrador">Administrador</option>
                         </select>
                     </div>
                     <div className="col-3">
@@ -63,7 +63,7 @@ export default function FormUser({onInsertUser, onShowAlert}){
                         <input type="password" className="form-control fs-5" placeholder="Confirmar Senha" value={password2} onChange={(e)=>setPassword2(e.target.value)} />
                     </div>
                     <div className="col">
-                        <button className="btn btn-primary fs-5 fw-bold w-100" type="submit" disabled={userAccessLevel!='admin'}>Cadastrar</button>                        
+                        <button className="btn btn-primary fs-5 fw-bold w-100" type="submit" disabled={currentUser.access_level!='administrador'}>Cadastrar</button>                        
                     </div>
                 </div>
             </form>

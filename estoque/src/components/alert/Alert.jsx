@@ -20,7 +20,7 @@ const Alert = ({ message, type, onClose, duration }) => {
 
   return (
     <div style={alertStyles} className={`alert alert-${type} alert-dismissible fade show`} role="alert">
-      {message.map(mes=><p key={mes[0]}>*{mes}</p>)}
+      {message.split('\n').length === 2? message.split('\n').map(mes=><p key={mes}>{mes}</p>): <p>{message}</p>}
       <button type="button" className="btn-close" onClick={onClose} aria-label="Close"></button>
     </div>
   );
@@ -31,10 +31,6 @@ Alert.propTypes = {
   type: PropTypes.oneOf(['success', 'danger']).isRequired, // 'danger' para erro
   onClose: PropTypes.func.isRequired,
   duration: PropTypes.number,
-};
-
-Alert.defaultProps = {
-  duration: 5000, // 5 segundos por padrão
 };
 
 export default Alert;
